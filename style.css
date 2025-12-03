@@ -383,19 +383,19 @@
 
     .badge-yellow {
       background: var(--yellow);
-      color: #000;
+      color: #fff;
       border-color: var(--yellow);
     }
 
     .badge-purple {
       background: var(--purple);
-      color: #000;
+      color: #fff;
       border-color: var(--purple);
     }
 
     .badge-orange {
       background: var(--orange);
-      color: #000;
+      color: #fff;
       border-color: var(--orange);
     }
 
