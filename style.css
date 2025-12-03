@@ -214,31 +214,31 @@
     .section-purple   { border: 2px solid var(--purple); }
 
     .reward-blue {
-      background: var(--blue);
+      background: var(--blue) !important;
       border-color: var(--blue);
       color: #fff;
     }
 
     .reward-orange {
-      background: var(--orange);
+      background: var(--orange) !important;
       border-color: var(--orange);
       color: #000;
     }
 
     .reward-green {
-      background: var(--green);
+      background: var(--green) !important;
       border-color: var(--green);
       color: #fff;
     }
 
     .reward-yellow {
-      background: var(--yellow);
+      background: var(--yellow) !important;
       border-color: var(--yellow);
       color: #000;
     }
 
     .reward-purple {
-      background: var(--purple);
+      background: var(--purple) !important;
       border-color: var(--purple);
       color: #fff;
     }
