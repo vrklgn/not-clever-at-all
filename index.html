@@ -171,6 +171,13 @@
       opacity: 0.85;
     }
 
+    .cell.ghost {
+      background: transparent;
+      border-color: transparent;
+      box-shadow: none;
+      opacity: 1;
+    }
+
     /* numeric input cells */
 
     .num-cell {
@@ -330,6 +337,11 @@
       text-shadow: 0 0 4px #000;
     }
 
+    .cell.tracker.used {
+      border-color: #fff;
+      box-shadow: 0 0 0 2px #fff inset;
+    }
+
     .rewards-row {
       display: grid;
       gap: 0.25rem;
@@ -342,6 +354,24 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .badge-blue {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+
+    .badge-yellow {
+      background: var(--yellow);
+      color: #000;
+      border-color: var(--yellow);
+    }
+
+    .badge-orange {
+      background: var(--orange);
+      color: #000;
+      border-color: var(--orange);
     }
 
     @media (max-width: 360px) {
@@ -486,7 +516,7 @@
     <!-- middle 3x4 grid -->
     <div class="row" style="grid-template-columns: repeat(5, 1fr);">
       <!-- row 1 -->
-      <div class="cell static"><span class="cell-label"></span></div>
+      <div class="cell static ghost"><span class="cell-label"></span></div>
       <button class="cell" data-id="b-1-2" data-type="check" data-section="blue" data-score="2"><span class="cell-label">2</span></button>
       <button class="cell" data-id="b-1-3" data-type="check" data-section="blue" data-score="3"><span class="cell-label">3</span></button>
       <button class="cell" data-id="b-1-4" data-type="check" data-section="blue" data-score="4"><span class="cell-label">4</span></button>
@@ -601,13 +631,13 @@
       <span class="reward-slot"></span>
       <span class="reward-slot"></span>
       <span class="reward-slot"><span class="badge">⟳</span></span>
-      <span class="reward-slot"><span class="badge">bX</span></span>
+      <span class="reward-slot"><span class="badge badge-blue">bX</span></span>
       <span class="reward-slot"><span class="badge">+1</span></span>
-      <span class="reward-slot"><span class="badge">yX</span></span>
+      <span class="reward-slot"><span class="badge badge-yellow">yX</span></span>
       <span class="reward-slot"><span class="badge">🦊</span></span>
       <span class="reward-slot"><span class="badge">⟳</span></span>
       <span class="reward-slot"><span class="badge">X</span></span>
-      <span class="reward-slot"><span class="badge">o6</span></span>
+      <span class="reward-slot"><span class="badge badge-orange">o6</span></span>
       <span class="reward-slot"><span class="badge">+1</span></span>
     </div>
   </section>
