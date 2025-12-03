@@ -290,9 +290,6 @@
       <div class="label">Fox bonus (worst section × foxes)</div>
       <div class="total" id="score-fox-bonus">0</div>
 
-      <div class="label">Other bonuses</div>
-      <input class="score-input" type="number" inputmode="numeric" data-id="score-bonus" data-type="score" />
-
       <div class="label" style="font-weight:700;">Grand total</div>
       <div class="total" id="score-total">0</div>
     </div>
@@ -340,9 +337,6 @@
       }
     });
     document.querySelectorAll("[data-type='num']").forEach(el => {
-      el.value = "";
-    });
-    document.querySelectorAll("[data-type='score']").forEach(el => {
       el.value = "";
     });
     updateScores();
@@ -395,20 +389,6 @@
 
   function initNumberInputs() {
     document.querySelectorAll("[data-type='num']").forEach(input => {
-      const id = input.dataset.id;
-      if (state[id] !== undefined) {
-        input.value = state[id];
-      }
-      input.addEventListener("input", () => {
-        state[id] = input.value;
-        saveState();
-        updateScores();
-      });
-    });
-  }
-
-  function initScoreInputs() {
-    document.querySelectorAll("[data-type='score']").forEach(input => {
       const id = input.dataset.id;
       if (state[id] !== undefined) {
         input.value = state[id];
@@ -485,13 +465,6 @@
     return sum;
   }
 
-  function getManualScore(id) {
-    const input = document.querySelector(`[data-id='${id}']`);
-    if (!input) return 0;
-    const val = parseInt(input.value, 10);
-    return isNaN(val) ? 0 : val;
-  }
-
   function isNumberInputFilled(id) {
     const input = document.querySelector(`[data-id='${id}']`);
     if (!input) return false;
@@ -536,10 +509,12 @@
     const greenSum = getGreenScore();
     const orangeSum = getNumberInputSum("o", 11);
     const purpleSum = getNumberInputSum("p", 11);
-    const bonusSum = getManualScore("score-bonus");
 
     const foxCount = getFoxCount();
-    const worstSection = Math.min(yellowSum, blueSum, greenSum, orangeSum, purpleSum);
+    const sectionTotals = [yellowSum, blueSum, greenSum, orangeSum, purpleSum].map(total =>
+      Number.isFinite(total) ? total : 0
+    );
+    const worstSection = Math.min(...sectionTotals);
     const foxSum = foxCount * worstSection;
 
     document.getElementById("score-yellow").textContent = yellowSum;
@@ -550,7 +525,7 @@
     document.getElementById("score-fox-count").textContent = foxCount;
     document.getElementById("score-fox-bonus").textContent = foxSum;
 
-    const total = yellowSum + blueSum + greenSum + orangeSum + purpleSum + foxSum + bonusSum;
+    const total = yellowSum + blueSum + greenSum + orangeSum + purpleSum + foxSum;
     document.getElementById("score-total").textContent = total;
   }
 
@@ -566,7 +541,6 @@
   loadState();
   initChecks();
   initNumberInputs();
-  initScoreInputs();
   initReset();
   updateScores();
 </script>
