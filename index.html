@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ganz Schön Clever – Travel Sheet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #111;
+      --panel: #222;
+      --border: #555;
+      --text: #f5f5f5;
+      --yellow: #f0b000;
+      --blue: #1976d2;
+      --green: #2e7d32;
+      --orange: #ef6c00;
+      --purple: #7b1fa2;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 1rem;
+      background: radial-gradient(circle at top, #333, #000);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+    }
+
+    .sheet {
+      width: 100%;
+      max-width: 430px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    h1 {
+      font-size: 1.1rem;
+      text-align: center;
+      margin: 0 0 0.5rem;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 999px;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+      background: #444;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .btn:active {
+      transform: scale(0.97);
+    }
+
+    section {
+      background: var(--panel);
+      border-radius: 0.9rem;
+      padding: 0.4rem 0.6rem 0.6rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    }
+
+    .section-title {
+      font-size: 0.7rem;
+      opacity: 0.8;
+      margin: 0 0 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* generic cells */
+
+    .row {
+      display: grid;
+      gap: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .row.inline {
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+    }
+
+    .cell {
+      position: relative;
+      border-radius: 0.35rem;
+      border: 2px solid var(--border);
+      min-height: 2rem;
+      font-size: 0.9rem;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      cursor: pointer;
+    }
+
+    .cell.circle {
+      border-radius: 999px;
+      aspect-ratio: 1 / 1;
+    }
+
+    .cell.die {
+      aspect-ratio: 2/3;
+      border-radius: 0.45rem;
+      background: #f5f5f5;
+      color: #000;
+    }
+
+    .cell-label {
+      pointer-events: none;
+      font-weight: 600;
+    }
+
+    .cell.marked::after {
+      content: "✕";
+      position: absolute;
+      font-size: 1.6rem;
+      color: #ffeb3b;
+      text-shadow: 0 0 4px #000;
+    }
+
+    .cell.bonus {
+      background: #000;
+      border-color: #777;
+      font-size: 0.75rem;
+      padding: 0 0.35rem;
+    }
+
+    .cell.static {
+      cursor: default;
+      background: #000;
+      border-style: dashed;
+      opacity: 0.85;
+    }
+
+    /* numeric input cells */
+
+    .num-cell {
+      border-radius: 0.35rem;
+      border: 2px solid var(--border);
+      min-height: 2rem;
+      padding: 0.15rem;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .num-cell input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    .num-cell input::-webkit-outer-spin-button,
+    .num-cell input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .num-cell input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    /* coloured sections */
+
+    .section-yellow   { border: 2px solid var(--yellow); }
+    .section-blue     { border: 2px solid var(--blue); }
+    .section-green    { border: 2px solid var(--green); }
+    .section-orange   { border: 2px solid var(--orange); }
+    .section-purple   { border: 2px solid var(--purple); }
+
+    .badge {
+      font-size: 0.7rem;
+      border-radius: 999px;
+      padding: 0.1rem 0.4rem;
+      border: 1px solid #999;
+      background: #000;
+      opacity: 0.9;
+    }
+
+    .top-meta {
+      display: grid;
+      grid-template-columns: 0.3fr 1fr;
+      gap: 0.25rem;
+      align-items: center;
+      margin-bottom: 0.3rem;
+    }
+
+    .top-meta .big-box {
+      border-radius: 0.45rem;
+      border: 2px solid var(--border);
+      background: #eee;
+      min-height: 2.2rem;
+    }
+
+    .top-meta .track {
+      background: linear-gradient(#555, #333);
+      border-radius: 0.7rem;
+      padding: 0.25rem;
+    }
+
+    .top-meta .track-inner {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 0.2rem;
+      align-items: center;
+    }
+
+    .top-meta .track-label-cell {
+      grid-column: 1 / span 2;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.75rem;
+    }
+
+    .top-meta .track-label-cell span {
+      white-space: nowrap;
+    }
+
+    .top-meta .track-label-icon {
+      width: 1.3rem;
+      aspect-ratio: 1/1;
+      border-radius: 999px;
+      border: 2px solid #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      background: #000;
+    }
+
+    @media (max-width: 360px) {
+      .cell, .num-cell {
+        min-height: 1.7rem;
+      }
+    }
+
+  </style>
+</head>
+<body>
+<div class="sheet">
+  <h1>Ganz Schön Clever – Digital Sheet</h1>
+  <div class="controls">
+    <span style="font-size:0.7rem;opacity:0.8;">Autosaves locally</span>
+    <button class="btn" id="reset-btn">Reset sheet</button>
+  </div>
+
+  <!-- TOP AREA: dice & general bonuses -->
+  <section>
+    <p class="section-title">Top area</p>
+
+    <!-- big dice row -->
+    <div class="row inline" style="grid-template-columns: repeat(6, 1fr); margin-bottom:0.4rem;">
+      <button class="cell die" data-id="die-1" data-type="check"><span class="cell-label">1</span></button>
+      <button class="cell die" data-id="die-2" data-type="check"><span class="cell-label">2</span></button>
+      <button class="cell die" data-id="die-3" data-type="check"><span class="cell-label">3</span></button>
+      <button class="cell die" data-id="die-4" data-type="check"><span class="cell-label">4</span></button>
+      <button class="cell die" data-id="die-5" data-type="check"><span class="cell-label">5</span></button>
+      <button class="cell die" data-id="die-6" data-type="check"><span class="cell-label">6</span></button>
+    </div>
+
+    <!-- bonus tracks -->
+    <div class="top-meta">
+      <div class="big-box"></div>
+      <div class="track">
+        <div class="track-inner">
+          <div class="track-label-cell">
+            <div class="track-label-icon">⟳</div><span>Re-roll</span>
+          </div>
+          <!-- 6 generic circles -->
+          <button class="cell circle" data-id="reroll-1" data-type="check"></button>
+          <button class="cell circle" data-id="reroll-2" data-type="check"></button>
+          <button class="cell circle" data-id="reroll-3" data-type="check"></button>
+          <button class="cell circle" data-id="reroll-4" data-type="check"></button>
+          <button class="cell circle" data-id="reroll-5" data-type="check"></button>
+          <button class="cell circle" data-id="reroll-6" data-type="check"></button>
+        </div>
+      </div>
+
+      <div class="big-box"></div>
+      <div class="track">
+        <div class="track-inner">
+          <div class="track-label-cell">
+            <div class="track-label-icon">+1</div><span>+1</span>
+          </div>
+          <button class="cell circle" data-id="plus1-1" data-type="check"></button>
+          <button class="cell circle" data-id="plus1-2" data-type="check"></button>
+          <button class="cell circle" data-id="plus1-3" data-type="check"></button>
+          <button class="cell circle" data-id="plus1-4" data-type="check"></button>
+          <button class="cell circle" data-id="plus1-5" data-type="check"></button>
+          <button class="cell circle" data-id="plus1-6" data-type="check"></button>
+        </div>
+      </div>
+
+      <div class="big-box"></div>
+      <div></div>
+    </div>
+  </section>
+
+  <!-- YELLOW + BLUE -->
+  <section class="section-yellow">
+    <p class="section-title">Yellow</p>
+    <div class="row" style="grid-template-columns: repeat(5, 1fr);">
+      <!-- 4x4 grid + right bonus column -->
+      <!-- row 1 -->
+      <button class="cell" data-id="y-1-1" data-type="check"><span class="cell-label">3</span></button>
+      <button class="cell" data-id="y-1-2" data-type="check"><span class="cell-label">6</span></button>
+      <button class="cell" data-id="y-1-3" data-type="check"><span class="cell-label">5</span></button>
+      <button class="cell" data-id="y-1-4" data-type="check"><span class="cell-label">X</span></button>
+      <div class="cell static"><span class="cell-label">X</span></div>
+
+      <!-- row 2 -->
+      <button class="cell" data-id="y-2-1" data-type="check"><span class="cell-label">2</span></button>
+      <button class="cell" data-id="y-2-2" data-type="check"><span class="cell-label">1</span></button>
+      <button class="cell" data-id="y-2-3" data-type="check"><span class="cell-label">X</span></button>
+      <button class="cell" data-id="y-2-4" data-type="check"><span class="cell-label">5</span></button>
+      <div class="cell static"><span class="cell-label">4</span></div>
+
+      <!-- row 3 -->
+      <button class="cell" data-id="y-3-1" data-type="check"><span class="cell-label">1</span></button>
+      <button class="cell" data-id="y-3-2" data-type="check"><span class="cell-label">X</span></button>
+      <button class="cell" data-id="y-3-3" data-type="check"><span class="cell-label">2</span></button>
+      <button class="cell" data-id="y-3-4" data-type="check"><span class="cell-label">4</span></button>
+      <div class="cell static"><span class="cell-label">X</span></div>
+
+      <!-- row 4 -->
+      <button class="cell" data-id="y-4-1" data-type="check"><span class="cell-label">X</span></button>
+      <button class="cell" data-id="y-4-2" data-type="check"><span class="cell-label">3</span></button>
+      <button class="cell" data-id="y-4-3" data-type="check"><span class="cell-label">4</span></button>
+      <button class="cell" data-id="y-4-4" data-type="check"><span class="cell-label">6</span></button>
+      <div class="cell static"><span class="cell-label">🦊</span></div>
+    </div>
+
+    <div class="row inline" style="grid-template-columns: repeat(5, 1fr); margin-top:0.25rem;">
+      <div class="cell static"><span class="cell-label">10</span></div>
+      <div class="cell static"><span class="cell-label">14</span></div>
+      <div class="cell static"><span class="cell-label">16</span></div>
+      <div class="cell static"><span class="cell-label">20</span></div>
+      <div class="cell static"><span class="cell-label">+1</span></div>
+    </div>
+  </section>
+
+  <section class="section-blue">
+    <p class="section-title">Blue</p>
+
+    <!-- top small track (1–11) -->
+    <div class="row inline" style="grid-template-columns: repeat(11, 1fr); margin-bottom:0.3rem;">
+      <!-- just markable circles -->
+      <!-- ids: btop-1..11 -->
+      <button class="cell circle" data-id="btop-1" data-type="check"></button>
+      <button class="cell circle" data-id="btop-2" data-type="check"></button>
+      <button class="cell circle" data-id="btop-3" data-type="check"></button>
+      <button class="cell circle" data-id="btop-4" data-type="check"></button>
+      <button class="cell circle" data-id="btop-5" data-type="check"></button>
+      <button class="cell circle" data-id="btop-6" data-type="check"></button>
+      <button class="cell circle" data-id="btop-7" data-type="check"></button>
+      <button class="cell circle" data-id="btop-8" data-type="check"></button>
+      <button class="cell circle" data-id="btop-9" data-type="check"></button>
+      <button class="cell circle" data-id="btop-10" data-type="check"></button>
+      <button class="cell circle" data-id="btop-11" data-type="check"></button>
+    </div>
+
+    <!-- middle 3x4 grid -->
+    <div class="row" style="grid-template-columns: repeat(5, 1fr);">
+      <!-- row 1 -->
+      <div class="cell static"><span class="cell-label">+</span></div>
+      <button class="cell" data-id="b-1-2" data-type="check"><span class="cell-label">2</span></button>
+      <button class="cell" data-id="b-1-3" data-type="check"><span class="cell-label">3</span></button>
+      <button class="cell" data-id="b-1-4" data-type="check"><span class="cell-label">4</span></button>
+      <div class="cell static"><span class="cell-label">5</span></div>
+
+      <!-- row 2 -->
+      <button class="cell" data-id="b-2-1" data-type="check"><span class="cell-label">5</span></button>
+      <button class="cell" data-id="b-2-2" data-type="check"><span class="cell-label">6</span></button>
+      <button class="cell" data-id="b-2-3" data-type="check"><span class="cell-label">7</span></button>
+      <button class="cell" data-id="b-2-4" data-type="check"><span class="cell-label">8</span></button>
+      <div class="cell static"><span class="cell-label">X</span></div>
+
+      <!-- row 3 -->
+      <button class="cell" data-id="b-3-1" data-type="check"><span class="cell-label">9</span></button>
+      <button class="cell" data-id="b-3-2" data-type="check"><span class="cell-label">10</span></button>
+      <button class="cell" data-id="b-3-3" data-type="check"><span class="cell-label">11</span></button>
+      <button class="cell" data-id="b-3-4" data-type="check"><span class="cell-label">12</span></button>
+      <div class="cell static"><span class="cell-label">🦊</span></div>
+    </div>
+
+    <!-- bottom rewards -->
+    <div class="row inline" style="grid-template-columns: repeat(4, 1fr); margin-top:0.25rem;">
+      <div class="cell static"><span class="cell-label">⟳</span></div>
+      <div class="cell static"><span class="cell-label">X</span></div>
+      <div class="cell static"><span class="cell-label">6</span></div>
+      <div class="cell static"><span class="cell-label">+1</span></div>
+    </div>
+  </section>
+
+  <!-- GREEN -->
+  <section class="section-green">
+    <p class="section-title">Green</p>
+    <div class="row inline" style="grid-template-columns: repeat(12, 1fr);">
+      <div class="cell static"><span class="cell-label">▶</span></div>
+      <button class="cell" data-id="g-1" data-type="check"><span class="cell-label">≥1</span></button>
+      <button class="cell" data-id="g-2" data-type="check"><span class="cell-label">≥2</span></button>
+      <button class="cell" data-id="g-3" data-type="check"><span class="cell-label">≥3</span></button>
+      <button class="cell" data-id="g-4" data-type="check"><span class="cell-label">≥4</span></button>
+      <button class="cell" data-id="g-5" data-type="check"><span class="cell-label">≥5</span></button>
+      <button class="cell" data-id="g-6" data-type="check"><span class="cell-label">≥1</span></button>
+      <button class="cell" data-id="g-7" data-type="check"><span class="cell-label">≥2</span></button>
+      <button class="cell" data-id="g-8" data-type="check"><span class="cell-label">≥3</span></button>
+      <button class="cell" data-id="g-9" data-type="check"><span class="cell-label">≥4</span></button>
+      <button class="cell" data-id="g-10" data-type="check"><span class="cell-label">≥5</span></button>
+      <button class="cell" data-id="g-11" data-type="check"><span class="cell-label">≥6</span></button>
+    </div>
+    <div class="row inline" style="grid-template-columns: repeat(5, auto); margin-top:0.25rem; font-size:0.75rem;">
+      <span class="badge">+1</span>
+      <span class="badge">X</span>
+      <span class="badge">🦊</span>
+      <span class="badge">6</span>
+      <span class="badge">⟳</span>
+    </div>
+  </section>
+
+  <!-- ORANGE -->
+  <section class="section-orange">
+    <p class="section-title">Orange</p>
+    <div class="row inline" style="grid-template-columns: repeat(11, 1fr);">
+      <div class="cell static"><span class="cell-label">▶</span></div>
+      <!-- 10 numeric fields -->
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="o-1" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="o-2" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="o-3" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="o-4" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="o-5" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="o-6" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="o-7" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="o-8" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="o-9" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="o-10" data-type="num"></div>
+    </div>
+    <div class="row inline" style="grid-template-columns: repeat(5, auto); margin-top:0.25rem; font-size:0.75rem;">
+      <span class="badge">⟳</span>
+      <span class="badge">X</span>
+      <span class="badge">+1</span>
+      <span class="badge">🦊</span>
+      <span class="badge">6</span>
+    </div>
+  </section>
+
+  <!-- PURPLE -->
+  <section class="section-purple">
+    <p class="section-title">Purple</p>
+    <div class="row inline" style="grid-template-columns: repeat(11, 1fr);">
+      <div class="cell static"><span class="cell-label">▶</span></div>
+      <!-- 10 numeric fields -->
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="p-1" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="p-2" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="p-3" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="p-4" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="p-5" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="p-6" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="p-7" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="p-8" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="p-9" data-type="num"></div>
+      <div class="num-cell"><input type="number" inputmode="numeric" data-id="p-10" data-type="num"></div>
+    </div>
+    <div class="row inline" style="grid-template-columns: repeat(6, auto); margin-top:0.25rem; font-size:0.75rem;">
+      <span class="badge">⟳</span>
+      <span class="badge">+1</span>
+      <span class="badge">X</span>
+      <span class="badge">🦊</span>
+      <span class="badge">6</span>
+      <span class="badge">+1</span>
+    </div>
+  </section>
+</div>
+
+<script>
+  // --- State handling -------------------------------------------------------
+  const STORAGE_KEY = "gsc-sheet-v1";
+
+  let state = {};
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        state = JSON.parse(raw);
+      }
+    } catch (e) {
+      console.warn("Could not load state", e);
+    }
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {
+      console.warn("Could not save state", e);
+    }
+  }
+
+  function resetState() {
+    state = {};
+    saveState();
+    // reset UI
+    document.querySelectorAll("[data-type='check']").forEach(el => {
+      el.classList.remove("marked");
+    });
+    document.querySelectorAll("[data-type='num']").forEach(el => {
+      el.value = "";
+    });
+  }
+
+  // --- UI bindings ----------------------------------------------------------
+  function initChecks() {
+    document.querySelectorAll("[data-type='check']").forEach(el => {
+      const id = el.dataset.id;
+      // apply saved state
+      if (state[id]) {
+        el.classList.add("marked");
+      }
+      el.addEventListener("click", () => {
+        const currentlyMarked = el.classList.toggle("marked");
+        state[id] = currentlyMarked ? 1 : 0;
+        saveState();
+      });
+    });
+  }
+
+  function initNumberInputs() {
+    document.querySelectorAll("[data-type='num']").forEach(input => {
+      const id = input.dataset.id;
+      if (state[id] !== undefined) {
+        input.value = state[id];
+      }
+      input.addEventListener("input", () => {
+        state[id] = input.value;
+        saveState();
+      });
+    });
+  }
+
+  function initReset() {
+    document.getElementById("reset-btn").addEventListener("click", () => {
+      if (confirm("Clear all marks and numbers?")) {
+        resetState();
+      }
+    });
+  }
+
+  // --- boot -------------------------------------------------------
+  loadState();
+  initChecks();
+  initNumberInputs();
+  initReset();
+</script>
+</body>
+</html>
