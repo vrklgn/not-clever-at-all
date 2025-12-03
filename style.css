@@ -1,4 +1,4 @@
-    :root {
+     :root {
       --bg: #111;
       --panel: #222;
       --border: #555;
@@ -197,7 +197,7 @@
 
     .section-orange .num-cell input,
     .section-purple .num-cell input {
-      font-size: clamp(0.55rem, 4vw, 0.55rem);
+      font-size: clamp(0.6rem, 4vw, 0.6rem);
     }
 
     .num-cell input::-webkit-outer-spin-button,
