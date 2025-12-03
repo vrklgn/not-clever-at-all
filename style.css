@@ -399,6 +399,13 @@
       border-color: var(--orange);
     }
 
+    .badge-green {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+
+
     @media (max-width: 360px) {
       .cell, .num-cell {
         min-height: 1.7rem;
