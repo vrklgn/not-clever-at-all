@@ -401,23 +401,6 @@
   <section class="section-blue">
     <p class="section-title">Blue</p>
 
-    <!-- top small track (1–11) -->
-    <div class="row inline" style="grid-template-columns: repeat(11, 1fr); margin-bottom:0.3rem;">
-      <!-- just markable circles -->
-      <!-- ids: btop-1..11 -->
-      <button class="cell circle" data-id="btop-1" data-type="check" data-section="blue" data-score="1"><span class="cell-label">1</span></button>
-      <button class="cell circle" data-id="btop-2" data-type="check" data-section="blue" data-score="2"><span class="cell-label">2</span></button>
-      <button class="cell circle" data-id="btop-3" data-type="check" data-section="blue" data-score="3"><span class="cell-label">3</span></button>
-      <button class="cell circle" data-id="btop-4" data-type="check" data-section="blue" data-score="4"><span class="cell-label">4</span></button>
-      <button class="cell circle" data-id="btop-5" data-type="check" data-section="blue" data-score="5"><span class="cell-label">5</span></button>
-      <button class="cell circle" data-id="btop-6" data-type="check" data-section="blue" data-score="6"><span class="cell-label">6</span></button>
-      <button class="cell circle" data-id="btop-7" data-type="check" data-section="blue" data-score="7"><span class="cell-label">7</span></button>
-      <button class="cell circle" data-id="btop-8" data-type="check" data-section="blue" data-score="8"><span class="cell-label">8</span></button>
-      <button class="cell circle" data-id="btop-9" data-type="check" data-section="blue" data-score="9"><span class="cell-label">9</span></button>
-      <button class="cell circle" data-id="btop-10" data-type="check" data-section="blue" data-score="10"><span class="cell-label">10</span></button>
-      <button class="cell circle" data-id="btop-11" data-type="check" data-section="blue" data-score="11"><span class="cell-label">11</span></button>
-    </div>
-
     <!-- middle 3x4 grid -->
     <div class="row" style="grid-template-columns: repeat(5, 1fr);">
       <!-- row 1 -->
@@ -443,11 +426,12 @@
     </div>
 
     <!-- bottom rewards -->
-    <div class="row inline" style="grid-template-columns: repeat(4, 1fr); margin-top:0.25rem;">
+    <div class="row inline" style="grid-template-columns: repeat(5, 1fr); margin-top:0.25rem;">
       <div class="cell static"><span class="cell-label">⟳</span></div>
       <div class="cell static"><span class="cell-label">X</span></div>
       <div class="cell static"><span class="cell-label">6</span></div>
       <div class="cell static"><span class="cell-label">+1</span></div>
+      <div class="cell static"></div>
     </div>
   </section>
 
@@ -685,6 +669,17 @@
     }, 0);
   }
 
+  function getBlueScore() {
+    const ids = [
+      "b-1-2", "b-1-3", "b-1-4",
+      "b-2-1", "b-2-2", "b-2-3", "b-2-4",
+      "b-3-1", "b-3-2", "b-3-3", "b-3-4",
+    ];
+    const marks = ids.filter(isMarked).length;
+    const table = [0, 1, 2, 4, 7, 11, 16, 22, 29, 37, 46, 56];
+    return table[marks] || 0;
+  }
+
   function getGreenScore() {
     const ids = [
       "g-1", "g-2", "g-3", "g-4", "g-5", "g-6", "g-7", "g-8", "g-9", "g-10", "g-11",
@@ -717,7 +712,7 @@
 
   function updateScores() {
     const yellowSum = getYellowScore();
-    const blueSum = getMarkedSum("blue");
+    const blueSum = getBlueScore();
     const greenSum = getGreenScore();
     const orangeSum = getNumberInputSum("o", 10);
     const purpleSum = getNumberInputSum("p", 10);
