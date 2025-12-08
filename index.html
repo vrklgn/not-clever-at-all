@@ -175,17 +175,17 @@
   <section class="section-green">
     <p class="section-title">Green <span class="section-score" id="section-score-green">- 0p</span></p>
     <div class="row inline" style="grid-template-columns: repeat(11, 1fr);">
-      <button class="cell" data-id="g-1" data-type="check"><span class="cell-label">≥1</span></button>
-      <button class="cell" data-id="g-2" data-type="check"><span class="cell-label">≥2</span></button>
-      <button class="cell" data-id="g-3" data-type="check"><span class="cell-label">≥3</span></button>
-      <button class="cell" data-id="g-4" data-type="check"><span class="cell-label">≥4</span></button>
-      <button class="cell" data-id="g-5" data-type="check"><span class="cell-label">≥5</span></button>
-      <button class="cell" data-id="g-6" data-type="check"><span class="cell-label">≥1</span></button>
-      <button class="cell" data-id="g-7" data-type="check"><span class="cell-label">≥2</span></button>
-      <button class="cell" data-id="g-8" data-type="check"><span class="cell-label">≥3</span></button>
-      <button class="cell" data-id="g-9" data-type="check"><span class="cell-label">≥4</span></button>
-      <button class="cell" data-id="g-10" data-type="check"><span class="cell-label">≥5</span></button>
-      <button class="cell" data-id="g-11" data-type="check"><span class="cell-label">≥6</span></button>
+      <button class="cell" data-id="g-1" data-type="check" data-section="green"><span class="cell-label">≥1</span></button>
+      <button class="cell" data-id="g-2" data-type="check" data-section="green"><span class="cell-label">≥2</span></button>
+      <button class="cell" data-id="g-3" data-type="check" data-section="green"><span class="cell-label">≥3</span></button>
+      <button class="cell" data-id="g-4" data-type="check" data-section="green"><span class="cell-label">≥4</span></button>
+      <button class="cell" data-id="g-5" data-type="check" data-section="green"><span class="cell-label">≥5</span></button>
+      <button class="cell" data-id="g-6" data-type="check" data-section="green"><span class="cell-label">≥1</span></button>
+      <button class="cell" data-id="g-7" data-type="check" data-section="green"><span class="cell-label">≥2</span></button>
+      <button class="cell" data-id="g-8" data-type="check" data-section="green"><span class="cell-label">≥3</span></button>
+      <button class="cell" data-id="g-9" data-type="check" data-section="green"><span class="cell-label">≥4</span></button>
+      <button class="cell" data-id="g-10" data-type="check" data-section="green"><span class="cell-label">≥5</span></button>
+      <button class="cell" data-id="g-11" data-type="check" data-section="green"><span class="cell-label">≥6</span></button>
     </div>
     <div class="rewards-row" style="grid-template-columns: repeat(11, 1fr);">
       <span class="reward-slot"></span>
@@ -373,20 +373,24 @@
         }
         const currentlyMarked = el.classList.toggle("marked");
         state[id] = currentlyMarked ? 1 : 0;
-        if (currentlyMarked && section === "green") {
-          fillPreviousGreen(id);
+        if (section === "green") {
+          if (currentlyMarked) {
+            fillPreviousGreen(id);
+          } else {
+            clearFollowingGreen(id);
+          }
+          normalizeGreenTrackFromState();
         }
         saveState();
         updateScores();
       });
     });
+    normalizeGreenTrackFromState();
   }
 
   function fillPreviousGreen(id) {
-    const match = id.match(/^g-(\d+)$/);
-    if (!match) return;
-    const target = parseInt(match[1], 10);
-    if (target <= 1) return;
+    const target = getGreenIndex(id);
+    if (target === null || target <= 1) return;
 
     for (let i = 1; i < target; i++) {
       const prevId = `g-${i}`;
@@ -395,6 +399,49 @@
       if (!prevEl.classList.contains("marked")) {
         prevEl.classList.add("marked");
         state[prevId] = 1;
+      }
+    }
+  }
+
+  function clearFollowingGreen(id) {
+    const target = getGreenIndex(id);
+    if (target === null) return;
+
+    for (let i = target + 1; i <= 11; i++) {
+      const nextId = `g-${i}`;
+      const nextEl = document.querySelector(`[data-id='${nextId}']`);
+      if (!nextEl) continue;
+      nextEl.classList.remove("marked");
+      state[nextId] = 0;
+    }
+  }
+
+  function getGreenIndex(id) {
+    const match = id.match(/^g-(\d+)$/);
+    if (!match) return null;
+    return parseInt(match[1], 10);
+  }
+
+  function normalizeGreenTrackFromState() {
+    const greenCells = Array.from(document.querySelectorAll("[data-id^='g-'][data-type='check']"));
+    const markedIndices = greenCells
+      .map(cell => ({ index: getGreenIndex(cell.dataset.id), marked: cell.classList.contains("marked") }))
+      .filter(item => item.index !== null && item.marked)
+      .map(item => item.index);
+
+    const highestMarked = markedIndices.length ? Math.max(...markedIndices) : 0;
+
+    for (let i = 1; i <= 11; i++) {
+      const cellId = `g-${i}`;
+      const cell = document.querySelector(`[data-id='${cellId}']`);
+      if (!cell) continue;
+
+      if (i <= highestMarked) {
+        cell.classList.add("marked");
+        state[cellId] = 1;
+      } else {
+        cell.classList.remove("marked");
+        state[cellId] = 0;
       }
     }
   }
