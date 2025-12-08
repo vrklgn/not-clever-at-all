@@ -93,7 +93,7 @@
 
   <!-- YELLOW + BLUE -->
   <section class="section-yellow">
-    <p class="section-title">Yellow</p>
+    <p class="section-title">Yellow <span class="section-score" id="section-score-yellow">- 0p</span></p>
     <div class="row" style="grid-template-columns: repeat(5, 1fr);">
       <!-- 4x4 grid + right bonus column -->
       <!-- row 1 -->
@@ -135,7 +135,7 @@
   </section>
 
   <section class="section-blue">
-    <p class="section-title">Blue</p>
+    <p class="section-title">Blue <span class="section-score" id="section-score-blue">- 0p</span></p>
 
     <!-- middle 3x4 grid -->
     <div class="row" style="grid-template-columns: repeat(5, 1fr);">
@@ -173,7 +173,7 @@
 
   <!-- GREEN -->
   <section class="section-green">
-    <p class="section-title">Green</p>
+    <p class="section-title">Green <span class="section-score" id="section-score-green">- 0p</span></p>
     <div class="row inline" style="grid-template-columns: repeat(11, 1fr);">
       <button class="cell" data-id="g-1" data-type="check"><span class="cell-label">≥1</span></button>
       <button class="cell" data-id="g-2" data-type="check"><span class="cell-label">≥2</span></button>
@@ -204,7 +204,7 @@
 
   <!-- ORANGE -->
   <section class="section-orange">
-    <p class="section-title">Orange</p>
+    <p class="section-title">Orange <span class="section-score" id="section-score-orange">- 0p</span></p>
     <div class="row inline" style="grid-template-columns: repeat(11, 1fr);">
       <!-- 11 numeric fields -->
       <div class="num-cell"><input type="number" inputmode="numeric" data-id="o-1" data-type="num"></div>
@@ -236,7 +236,7 @@
 
   <!-- PURPLE -->
   <section class="section-purple">
-    <p class="section-title">Purple</p>
+    <p class="section-title">Purple <span class="section-score" id="section-score-purple">- 0p</span></p>
     <div class="row inline" style="grid-template-columns: repeat(11, 1fr);">
       <!-- 11 numeric fields -->
       <div class="num-cell"><input type="number" inputmode="numeric" data-id="p-1" data-type="num"></div>
@@ -524,6 +524,13 @@
     return foxes;
   }
 
+  function setSectionHeaderScore(section, value) {
+    const el = document.getElementById(`section-score-${section}`);
+    if (!el) return;
+    const displayValue = Number.isFinite(value) ? value : 0;
+    el.textContent = `- ${displayValue}p`;
+  }
+
   function updateScores() {
     const yellowSum = getYellowScore();
     const blueSum = getBlueScore();
@@ -548,6 +555,12 @@
 
     const total = yellowSum + blueSum + greenSum + orangeSum + purpleSum + foxSum;
     document.getElementById("score-total").textContent = total;
+
+    setSectionHeaderScore("yellow", yellowSum);
+    setSectionHeaderScore("blue", blueSum);
+    setSectionHeaderScore("green", greenSum);
+    setSectionHeaderScore("orange", orangeSum);
+    setSectionHeaderScore("purple", purpleSum);
   }
 
   function initReset() {

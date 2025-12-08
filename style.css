@@ -76,6 +76,13 @@
       letter-spacing: 0.06em;
     }
 
+    .section-score {
+      font-weight: 700;
+      margin-left: 0.35rem;
+      opacity: 0.95;
+      text-transform: none;
+    }
+
     /* generic cells */
 
     .row {
