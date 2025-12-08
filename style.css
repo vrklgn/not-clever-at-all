@@ -142,10 +142,20 @@
       font-weight: 600;
     }
 
-    .cell.marked::after {
+    .cell.marked::after,
+    .cell.tracker.used::after {
       content: "✕";
       position: absolute;
-      font-size: 1.6rem;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.2rem;
+      line-height: 1;
+      width: 80%;
+      height: 80%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: #ffeb3b;
       text-shadow: 0 0 4px #000;
     }
@@ -346,14 +356,6 @@
     .cell.tracker.available {
       border-color: #fff;
       box-shadow: 0 0 0 2px #fff inset;
-    }
-
-    .cell.tracker.used::after {
-      content: "✕";
-      position: absolute;
-      font-size: 1.6rem;
-      color: #ffeb3b;
-      text-shadow: 0 0 4px #000;
     }
 
     .cell.tracker.used {
